@@ -6,21 +6,25 @@ const morgan = require('morgan');
 // replace mongoose internal promises with ES6 promises
 mongoose.Promise = global.Promise;
 
-// config js holds our app constants
+// config js holds app constants
 const { PORT, DATABASE_URL } = require('./config');
-
-// const { BlogPost } = require('./models');
 
 const app = express();
 app.use(bodyParser.json());
 
+// logs HTTP layer
 app.use(morgan('common'));
 
 const blogPostsRouter = require('./routers/blogPostsRouter');
 
-app.use('/blogposts', blogPostsRouter);
+// requests to /posts are directed to blogPostsRouter
+app.use('/posts', blogPostsRouter);
 
+app.use('*', (req, res) => {
+  res.status(404).json({message: 'resource not found'});
+});
 
+/////////////////////////////////////////////////////////////////
 function runServer(databaseUrl=DATABASE_URL, port=PORT) {
 
   return new Promise((resolve, reject) => {
