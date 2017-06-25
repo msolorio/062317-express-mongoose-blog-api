@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
     })
     .catch((err) => {
       console.error('error:', err);
-      res.status(500).json({message: 'There was an error retrieving all blog posts'});
+      res.status(500).json({message: 'The server encountered an error attempting to retrieve all blog posts'});
     });
 });
 
@@ -32,7 +32,7 @@ router.get('/:id', (req, res) => {
     })
     .catch((err) => {
       console.error('error:', err);
-      res.status(500).json({message: 'There was an error retrieving the requested blog post'});
+      res.status(500).json({message: 'The server encountered an error attempting to retrieve the requested blog post'});
     })
 });
 
@@ -77,7 +77,7 @@ router.post('/', (req, res) => {
     })
     .catch((err) => {
       console.error('error:', err);
-      res.status(500).json({message: `There was an error creating your blog post`});
+      res.status(500).json({message: `The server encountered an error attempting to create your blog post`});
     });
 
 });
@@ -116,12 +116,20 @@ router.put('/:id', (req, res) => {
     })
     .catch((err) => {
       console.error('error: ', err);
-      res.status(500).json({message: `There was an error updating post with id of ${req.params.id}`});
+      res.status(500).json({message: `The server encountered an error attempting to update post with id of ${req.params.id}`});
     });
 });
 
-router.delete('/', (req, res) => {
-  
+router.delete('/:id', (req, res) => {
+  BlogPost
+    .findByIdAndRemove(req.params.id)
+    .exec()
+    .then((post) => {
+      res.status(204).end();
+    })
+    .catch((err) => {
+      res.status(400).json({message: `The server encountered an error attempting to delete post with id ${req.param.id}`});
+    });
 });
 
 module.exports = router;
