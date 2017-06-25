@@ -12,7 +12,7 @@ const { BlogPost } = require('../models');
 router.get('/', (req, res) => {
   BlogPost
     .find()
-    .limit(5)
+    // .limit(5)
     .exec()
     .then((blogPosts) => {
       res.status(200).json({blogPosts: blogPosts.map((post) => post.apiRepr())});
@@ -82,8 +82,42 @@ router.post('/', (req, res) => {
 
 });
 
-router.put('/', (req, res) => {
-  
+router.put('/:id', (req, res) => {
+
+  // check that route param id and request body id match
+  if (!(req.params.id && req.body.id && req.params.id === req.body.id)) {
+    const message = `Route parameter id ${req.params.id} and request body id ${req.body.id} must match`;
+    console.error('error:', message);
+    res.status(400).json({message: message});
+  }
+
+  // build upate object passed to findByIdAndUpdate
+  const updatableFields = [
+    {fieldName: 'title', type: 'string'},
+    {fieldName: 'content', type: 'string'},
+    {fieldName: 'author', type: 'object'},
+    {fieldName: 'tags', type: 'object'}
+    ];
+  let toUpdate = {};
+
+  // TODO: ADD VALIDATION ON FIELD TYPES IN REQ.BODY BEFORE ADDING TO TOUPDATE
+  updatableFields.forEach((field) => {
+    if (field.fieldName in req.body) {
+      toUpdate[field.fieldName] = req.body[field.fieldName];
+    }
+  });
+
+  BlogPost
+    // new: true, specifies updated item will be returned
+    .findByIdAndUpdate(req.params.id, {$set: toUpdate}, {new: true})
+    .exec()
+    .then((post) => {
+      res.status(200).json(post.apiRepr());
+    })
+    .catch((err) => {
+      console.error('error: ', err);
+      res.status(500).json({message: `There was an error updating post with id of ${req.params.id}`});
+    });
 });
 
 router.delete('/', (req, res) => {

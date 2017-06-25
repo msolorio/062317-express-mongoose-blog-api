@@ -21,7 +21,7 @@ blogPostSchema.methods.apiRepr = function() {
     title: this.title,
     content: this.content,
     author: this.authorName,
-    created: this.created,
+    // created: this.created,
     tags: this.tags
   }
 }
