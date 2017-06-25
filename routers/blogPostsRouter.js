@@ -12,7 +12,6 @@ const { BlogPost } = require('../models');
 router.get('/', (req, res) => {
   BlogPost
     .find()
-    // .limit(5)
     .exec()
     .then((blogPosts) => {
       res.status(200).json({blogPosts: blogPosts.map((post) => post.apiRepr())});
@@ -70,6 +69,7 @@ router.post('/', (req, res) => {
         lastName: req.body.author.lastName
       },
       created: new Date().getTime(),
+      humanReadableCreated: new Date(),
       tags: req.body.tags
     })
     .then((blogPost) => {
@@ -128,7 +128,7 @@ router.delete('/:id', (req, res) => {
       res.status(204).end();
     })
     .catch((err) => {
-      res.status(400).json({message: `The server encountered an error attempting to delete post with id ${req.param.id}`});
+      res.status(500).json({message: `The server encountered an error attempting to delete post with id ${req.param.id}`});
     });
 });
 

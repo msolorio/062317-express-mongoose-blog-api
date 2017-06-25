@@ -8,9 +8,11 @@ const blogPostSchema = mongoose.Schema({
     lastName: {type: String, required: true}
   },
   created: {type: String, required: true},
+  humanReadableCreated: {type: String, required: true},
   tags: [String]
 });
 
+// creates a virtual authorName property that gets returned to the client with apiRepr
 blogPostSchema.virtual('authorName').get(function() {
   return `${this.author.firstName} ${this.author.lastName}`.trim();
 });
@@ -21,8 +23,8 @@ blogPostSchema.methods.apiRepr = function() {
     title: this.title,
     content: this.content,
     author: this.authorName,
-    // created: this.created,
-    tags: this.tags
+    tags: this.tags,
+    date: this.humanReadableCreated
   }
 }
 
